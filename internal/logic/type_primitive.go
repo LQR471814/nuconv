@@ -7,7 +7,6 @@ import (
 // Primitive maps primitive nu <-> primitive go type
 type Primitive struct {
 	ID     TypeID
-	NuType string
 	GoType string
 }
 
@@ -30,4 +29,3 @@ func (primitive Primitive) Parser() *jen.Statement {
 func (primitive Primitive) Serializer() *jen.Statement {
 	panic("not implemented") // TODO: Implement
 }
-

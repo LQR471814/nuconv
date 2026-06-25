@@ -1,7 +1,7 @@
 package code
 
 import (
-	"nu-plugin-gen/internal/logic"
+	"nuconv/internal/logic"
 
 	"golang.org/x/tools/go/packages"
 )

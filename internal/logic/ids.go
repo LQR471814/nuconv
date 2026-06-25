@@ -53,6 +53,10 @@ type TypeID struct {
 	Name string
 }
 
+func (id TypeID) String() string {
+	return fmt.Sprintf("%s/%s", id.Pkg, id.Name)
+}
+
 type Type interface {
 	// ID returns the ID of the type
 	TypeID() TypeID

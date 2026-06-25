@@ -29,6 +29,13 @@ type Package struct {
 	Types map[string]TypeEntry
 }
 
+func NewPackage(path PkgPath) Package {
+	return Package{
+		Path:  path,
+		Types: make(map[string]TypeEntry),
+	}
+}
+
 type Generator struct {
 	// Packages maps path to package
 	Packages map[PkgPath]Package
