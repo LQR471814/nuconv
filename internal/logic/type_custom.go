@@ -17,17 +17,17 @@ func (customtype CustomType) TypeID() TypeID {
 }
 
 // Definition returns a statement which declares the type definition
-func (customtype CustomType) Definition() *jen.Statement {
+func (customtype CustomType) Definition(g Generator) *jen.Statement {
 	panic("not implemented") // TODO: Implement
 }
 
 // Parser returns a statement which declares the parsing function
-func (customtype CustomType) Parser() *jen.Statement {
+func (customtype CustomType) Parser(g Generator) *jen.Statement {
 	panic("not implemented") // TODO: Implement
 }
 
 // Serializer returns a statement which declares the serializer function
-func (customtype CustomType) Serializer() *jen.Statement {
+func (customtype CustomType) Serializer(g Generator) *jen.Statement {
 	panic("not implemented") // TODO: Implement
 }
 

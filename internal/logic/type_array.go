@@ -15,16 +15,16 @@ func (arraytype ArrayType) TypeID() TypeID {
 }
 
 // Definition returns a statement which declares the type definition
-func (arraytype ArrayType) Definition() *jen.Statement {
+func (arraytype ArrayType) Definition(g Generator) *jen.Statement {
 	panic("not implemented") // TODO: Implement
 }
 
 // Parser returns a statement which declares the parsing function
-func (arraytype ArrayType) Parser() *jen.Statement {
+func (arraytype ArrayType) Parser(g Generator) *jen.Statement {
 	panic("not implemented") // TODO: Implement
 }
 
 // Serializer returns a statement which declares the serializer function
-func (arraytype ArrayType) Serializer() *jen.Statement {
+func (arraytype ArrayType) Serializer(g Generator) *jen.Statement {
 	panic("not implemented") // TODO: Implement
 }

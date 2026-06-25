@@ -61,11 +61,11 @@ type Type interface {
 	// ID returns the ID of the type
 	TypeID() TypeID
 	// Definition returns a statement which declares the type definition
-	Definition() *jen.Statement
+	Definition(g Generator) *jen.Statement
 	// Parser returns a statement which declares the parsing function
-	Parser() *jen.Statement
+	Parser(g Generator) *jen.Statement
 	// Serializer returns a statement which declares the serializer function
-	Serializer() *jen.Statement
+	Serializer(g Generator) *jen.Statement
 }
 
 // TypeDefID returns the ID for the type's type definition

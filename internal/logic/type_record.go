@@ -16,17 +16,17 @@ func (recordtype RecordType) TypeID() TypeID {
 }
 
 // Definition returns a statement which declares the type definition
-func (recordtype RecordType) Definition() *jen.Statement {
+func (recordtype RecordType) Definition(g Generator) *jen.Statement {
 	panic("not implemented") // TODO: Implement
 }
 
 // Parser returns a statement which declares the parsing function
-func (recordtype RecordType) Parser() *jen.Statement {
+func (recordtype RecordType) Parser(g Generator) *jen.Statement {
 	panic("not implemented") // TODO: Implement
 }
 
 // Serializer returns a statement which declares the serializer function
-func (recordtype RecordType) Serializer() *jen.Statement {
+func (recordtype RecordType) Serializer(g Generator) *jen.Statement {
 	panic("not implemented") // TODO: Implement
 }
 

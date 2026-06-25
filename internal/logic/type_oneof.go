@@ -17,16 +17,16 @@ func (oneoftype OneofType) TypeID() TypeID {
 }
 
 // Definition returns a statement which declares the type definition
-func (oneoftype OneofType) Definition() *jen.Statement {
+func (oneoftype OneofType) Definition(g Generator) *jen.Statement {
 	panic("not implemented") // TODO: Implement
 }
 
 // Parser returns a statement which declares the parsing function
-func (oneoftype OneofType) Parser() *jen.Statement {
+func (oneoftype OneofType) Parser(g Generator) *jen.Statement {
 	panic("not implemented") // TODO: Implement
 }
 
 // Serializer returns a statement which declares the serializer function
-func (oneoftype OneofType) Serializer() *jen.Statement {
+func (oneoftype OneofType) Serializer(g Generator) *jen.Statement {
 	panic("not implemented") // TODO: Implement
 }

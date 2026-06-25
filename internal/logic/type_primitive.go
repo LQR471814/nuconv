@@ -16,16 +16,16 @@ func (primitive Primitive) TypeID() TypeID {
 }
 
 // Definition returns a statement which declares the type definition
-func (primitive Primitive) Definition() *jen.Statement {
+func (primitive Primitive) Definition(g Generator) *jen.Statement {
 	panic("not implemented") // TODO: Implement
 }
 
 // Parser returns a statement which declares the parsing function
-func (primitive Primitive) Parser() *jen.Statement {
+func (primitive Primitive) Parser(g Generator) *jen.Statement {
 	panic("not implemented") // TODO: Implement
 }
 
 // Serializer returns a statement which declares the serializer function
-func (primitive Primitive) Serializer() *jen.Statement {
+func (primitive Primitive) Serializer(g Generator) *jen.Statement {
 	panic("not implemented") // TODO: Implement
 }
