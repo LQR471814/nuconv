@@ -1,14 +1,12 @@
 package code
 
 import (
-	"nuconv/internal/logic"
+	"nuconv/internal/gen"
 
 	"golang.org/x/tools/go/packages"
 )
 
 type Serializer struct {
-	UnderlyingPkgs map[logic.PkgPath]*packages.Package
-	LogicalPkgs    map[logic.PkgPath]logic.Package
+	UnderlyingPkgs map[gen.PkgPath]*packages.Package
+	LogicalPkgs    map[gen.PkgPath]gen.Package
 }
-
-

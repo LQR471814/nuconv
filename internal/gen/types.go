@@ -1,6 +1,6 @@
 // logic holds the business logic of transforming types into nu-plugin
 // code
-package logic
+package gen
 
 import (
 	"fmt"

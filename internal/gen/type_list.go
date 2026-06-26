@@ -1,4 +1,4 @@
-package logic
+package gen
 
 import (
 	"github.com/dave/jennifer/jen"

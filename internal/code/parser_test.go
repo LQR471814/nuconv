@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"go/token"
-	"nuconv/internal/logic"
+	"nuconv/internal/gen"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -67,49 +67,49 @@ func TestPkgParser(t *testing.T) {
 
 	const example_pkg = "nuconv/example"
 
-	expected := logic.Package{
+	expected := gen.Package{
 		Path: example_pkg,
-		Types: map[string]logic.TypeEntry{
+		Types: map[string]gen.TypeEntry{
 			"Structure": {
-				Type: logic.RecordType{
-					ID: logic.TypeID{
+				Type: gen.RecordType{
+					ID: gen.TypeID{
 						Pkg:  example_pkg,
 						Name: "Structure",
 					},
-					Fields: []logic.Field{
+					Fields: []gen.Field{
 						{
 							GoName: "Name",
-							Type:   logic.BuiltinTypeID("string"),
+							Type:   gen.BuiltinTypeID("string"),
 							NuName: "nu_name",
 						},
 						{
 							GoName: "Foo",
-							Type:   logic.TypeID{Pkg: example_pkg, Name: "Foo"},
+							Type:   gen.TypeID{Pkg: example_pkg, Name: "Foo"},
 							NuName: "foo",
 						},
 						{
 							GoName: "Float",
-							Type:   logic.BuiltinTypeID("float64"),
+							Type:   gen.BuiltinTypeID("float64"),
 							NuName: "float",
 						},
 						{
 							GoName: "Bool",
-							Type:   logic.BuiltinTypeID("bool"),
+							Type:   gen.BuiltinTypeID("bool"),
 							NuName: "bool",
 						},
 						{
 							GoName: "Time",
-							Type:   logic.TypeID{Pkg: "time", Name: "Time"},
+							Type:   gen.TypeID{Pkg: "time", Name: "Time"},
 							NuName: "time",
 						},
 						{
 							GoName: "Duration",
-							Type:   logic.TypeID{Pkg: "time", Name: "Duration"},
+							Type:   gen.TypeID{Pkg: "time", Name: "Duration"},
 							NuName: "duration",
 						},
 						{
 							GoName: "Map",
-							Type: logic.TypeID{
+							Type: gen.TypeID{
 								Pkg:  example_pkg,
 								Name: "Structure_Map_Map",
 							},
@@ -117,7 +117,7 @@ func TestPkgParser(t *testing.T) {
 						},
 						{
 							GoName: "Anonymous",
-							Type: logic.TypeID{
+							Type: gen.TypeID{
 								Pkg:  example_pkg,
 								Name: "Structure_Anonymous_Struct",
 							},
@@ -129,8 +129,8 @@ func TestPkgParser(t *testing.T) {
 				Private:   false,
 			},
 			"Structure_Map_Map": {
-				Type: logic.RecordType{
-					ID: logic.TypeID{
+				Type: gen.RecordType{
+					ID: gen.TypeID{
 						Pkg:  example_pkg,
 						Name: "Structure_Map_Map",
 					},
@@ -139,15 +139,15 @@ func TestPkgParser(t *testing.T) {
 				Private:   true,
 			},
 			"Structure_Anonymous_Struct": {
-				Type: logic.RecordType{
-					ID: logic.TypeID{
+				Type: gen.RecordType{
+					ID: gen.TypeID{
 						Pkg:  example_pkg,
 						Name: "Structure_Anonymous_Struct",
 					},
-					Fields: []logic.Field{
+					Fields: []gen.Field{
 						{
 							GoName: "Field",
-							Type:   logic.BuiltinTypeID("string"),
+							Type:   gen.BuiltinTypeID("string"),
 							NuName: "field",
 						},
 					},
@@ -156,15 +156,15 @@ func TestPkgParser(t *testing.T) {
 				Private:   true,
 			},
 			"Foo": {
-				Type: logic.RecordType{
-					ID: logic.TypeID{
+				Type: gen.RecordType{
+					ID: gen.TypeID{
 						Pkg:  example_pkg,
 						Name: "Foo",
 					},
-					Fields: []logic.Field{
+					Fields: []gen.Field{
 						{
 							GoName: "Bar",
-							Type: logic.TypeID{
+							Type: gen.TypeID{
 								Pkg:  example_pkg,
 								Name: "Foo_Bar_Pointer",
 							},
@@ -172,7 +172,7 @@ func TestPkgParser(t *testing.T) {
 						},
 						{
 							GoName: "Baz",
-							Type: logic.TypeID{
+							Type: gen.TypeID{
 								Pkg:  example_pkg,
 								Name: "Foo_Baz_Slice",
 							},
@@ -184,12 +184,12 @@ func TestPkgParser(t *testing.T) {
 				Private:   true,
 			},
 			"Foo_Bar_Pointer": {
-				Type: logic.OneofType{
-					ID: logic.TypeID{
+				Type: gen.OneofType{
+					ID: gen.TypeID{
 						Pkg:  example_pkg,
 						Name: "Foo_Bar_Pointer",
 					},
-					Alts: []logic.TypeID{
+					Alts: []gen.TypeID{
 						{Name: "nil"},
 						{Name: "string"},
 					},
@@ -198,12 +198,12 @@ func TestPkgParser(t *testing.T) {
 				Private:   true,
 			},
 			"Foo_Baz_Slice": {
-				Type: logic.ListType{
-					ID: logic.TypeID{
+				Type: gen.ListType{
+					ID: gen.TypeID{
 						Pkg:  example_pkg,
 						Name: "Foo_Baz_Slice",
 					},
-					ElementType: logic.TypeID{
+					ElementType: gen.TypeID{
 						Name: "int",
 					},
 				},

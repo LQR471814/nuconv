@@ -6,7 +6,7 @@ import (
 	"go/ast"
 	"go/types"
 	"iter"
-	"nuconv/internal/logic"
+	"nuconv/internal/gen"
 	"reflect"
 	"strings"
 
@@ -22,15 +22,15 @@ type Parser struct {
 	// pkgQueue stores queued packages to-be-parsed
 	pkgQueue map[string]struct{}
 
-	UnderlyingPkgs map[logic.PkgPath]*packages.Package
-	LogicalPkgs    map[logic.PkgPath]logic.Package
+	UnderlyingPkgs map[gen.PkgPath]*packages.Package
+	LogicalPkgs    map[gen.PkgPath]gen.Package
 }
 
 func NewParser() Parser {
 	return Parser{
 		pkgQueue:       map[string]struct{}{},
-		UnderlyingPkgs: map[logic.PkgPath]*packages.Package{},
-		LogicalPkgs:    map[logic.PkgPath]logic.Package{},
+		UnderlyingPkgs: map[gen.PkgPath]*packages.Package{},
+		LogicalPkgs:    map[gen.PkgPath]gen.Package{},
 	}
 }
 
@@ -42,12 +42,12 @@ type pkgParser struct {
 	// reservedTypes are a list of named types either marked with
 	// @nutype:manual or are built-in. these types should not have
 	// serialize/deserialize code automatically generated for them
-	reservedTypes map[logic.TypeID]struct{}
+	reservedTypes map[gen.TypeID]struct{}
 	// markedTypes are a list of types marked with @nutype:auto. these types
 	// should have serialize/deserialize code automatically generated for them
 	markedTypes map[string]struct{}
 	pkg         *packages.Package
-	out         *logic.Package
+	out         *gen.Package
 }
 
 type pkgParseContext struct {
@@ -78,7 +78,7 @@ func newPkgParser(pkg *packages.Package) (out pkgParser, err error) {
 	}
 	out.pkg = pkg
 	out.markedTypes = map[string]struct{}{}
-	out.reservedTypes = map[logic.TypeID]struct{}{
+	out.reservedTypes = map[gen.TypeID]struct{}{
 		// these are named types we don't
 		{
 			Pkg:  "time",
@@ -94,8 +94,8 @@ func newPkgParser(pkg *packages.Package) (out pkgParser, err error) {
 			out.markedTypes[markedType] = struct{}{}
 		}
 		for reservedType := range iterMarkedTypes(file, marker_manual_gen) {
-			out.reservedTypes[logic.TypeID{
-				Pkg:  logic.PkgPath(pkg.PkgPath),
+			out.reservedTypes[gen.TypeID{
+				Pkg:  gen.PkgPath(pkg.PkgPath),
 				Name: reservedType,
 			}] = struct{}{}
 		}
@@ -103,10 +103,10 @@ func newPkgParser(pkg *packages.Package) (out pkgParser, err error) {
 	return
 }
 
-func (p pkgParser) Parse() (out logic.Package, err error) {
-	p.out = &logic.Package{
-		Path:  logic.PkgPath(p.pkg.PkgPath),
-		Types: make(map[string]logic.TypeEntry),
+func (p pkgParser) Parse() (out gen.Package, err error) {
+	p.out = &gen.Package{
+		Path:  gen.PkgPath(p.pkg.PkgPath),
+		Types: make(map[string]gen.TypeEntry),
 	}
 
 	scope := p.pkg.Types.Scope()
@@ -134,8 +134,8 @@ func (p pkgParser) Parse() (out logic.Package, err error) {
 }
 
 // convertTypeAlias converts a type alias into TypeEntry
-func (p pkgParser) convertTypeAlias(alias *types.Alias, private bool) (out logic.TypeEntry, err error) {
-	out = logic.TypeEntry{
+func (p pkgParser) convertTypeAlias(alias *types.Alias, private bool) (out gen.TypeEntry, err error) {
+	out = gen.TypeEntry{
 		Anonymous: false,
 		Private:   private,
 	}
@@ -150,8 +150,8 @@ func (p pkgParser) convertTypeAlias(alias *types.Alias, private bool) (out logic
 }
 
 // convertNamedType converts a type declaration into TypeEntry
-func (p pkgParser) convertNamedType(named *types.Named, private bool) (out logic.TypeEntry, err error) {
-	out = logic.TypeEntry{
+func (p pkgParser) convertNamedType(named *types.Named, private bool) (out gen.TypeEntry, err error) {
+	out = gen.TypeEntry{
 		Anonymous: false,
 		Private:   private,
 	}
@@ -167,7 +167,7 @@ func (p pkgParser) convertNamedType(named *types.Named, private bool) (out logic
 
 // convertType converts types.Type -> logic.Type in the context of ctx with a
 // given TypeID
-func (p pkgParser) convertType(ctx pkgParseContext, typeID logic.TypeID, t types.Type) (out logic.Type, err error) {
+func (p pkgParser) convertType(ctx pkgParseContext, typeID gen.TypeID, t types.Type) (out gen.Type, err error) {
 	switch t := t.(type) {
 	case *types.Alias, *types.Named:
 		err = fmt.Errorf("named or alias types should not be passed to convertType")
@@ -190,41 +190,41 @@ func (p pkgParser) convertType(ctx pkgParseContext, typeID logic.TypeID, t types
 		// by the generator
 		return
 	case *types.Pointer:
-		var elemTypeID logic.TypeID
+		var elemTypeID gen.TypeID
 		elemTypeID, err = p.resolveTypeID(ctx, t.Elem())
 		if err != nil {
 			err = fmt.Errorf("resolve type id (%v): %w", typeID, err)
 			return
 		}
-		out = logic.OneofType{
+		out = gen.OneofType{
 			ID: typeID,
-			Alts: []logic.TypeID{
-				logic.BuiltinTypeID("nil"),
+			Alts: []gen.TypeID{
+				gen.BuiltinTypeID("nil"),
 				elemTypeID,
 			},
 		}
 		return
 	case *types.Array:
-		var elemTypeID logic.TypeID
+		var elemTypeID gen.TypeID
 		elemTypeID, err = p.resolveTypeID(ctx, t.Elem())
 		if err != nil {
 			err = fmt.Errorf("resolve type id (%v): %w", typeID, err)
 			return
 		}
-		out = logic.ArrayType{
+		out = gen.ArrayType{
 			ID:          typeID,
 			ElementType: elemTypeID,
 			Length:      t.Len(),
 		}
 		return
 	case *types.Slice:
-		var elemTypeID logic.TypeID
+		var elemTypeID gen.TypeID
 		elemTypeID, err = p.resolveTypeID(ctx, t.Elem())
 		if err != nil {
 			err = fmt.Errorf("resolve type id (%v): %w", typeID, err)
 			return
 		}
-		out = logic.ListType{
+		out = gen.ListType{
 			ID:          typeID,
 			ElementType: elemTypeID,
 		}
@@ -235,13 +235,13 @@ func (p pkgParser) convertType(ctx pkgParseContext, typeID logic.TypeID, t types
 			err = fmt.Errorf("resolve type id (%v): %w", typeID, err)
 			return
 		}
-		out = logic.RecordType{
+		out = gen.RecordType{
 			ID:     typeID,
 			Fields: nil,
 		}
 		return
 	case *types.Struct:
-		record := logic.RecordType{
+		record := gen.RecordType{
 			ID:     typeID,
 			Fields: nil,
 		}
@@ -258,14 +258,14 @@ func (p pkgParser) convertType(ctx pkgParseContext, typeID logic.TypeID, t types
 				nuName = pascalToSnakeCase(field.Name())
 			}
 
-			var fieldTypeID logic.TypeID
+			var fieldTypeID gen.TypeID
 			fieldTypeID, err = p.resolveTypeID(ctx.WithAccess(field.Name()), field.Type())
 			if err != nil {
 				err = fmt.Errorf("resolve type id (%v): %w", fieldTypeID, err)
 				return
 			}
 
-			record.Fields = append(record.Fields, logic.Field{
+			record.Fields = append(record.Fields, gen.Field{
 				GoName: field.Name(),
 				NuName: nuName,
 				Type:   fieldTypeID,
@@ -281,7 +281,7 @@ func (p pkgParser) convertType(ctx pkgParseContext, typeID logic.TypeID, t types
 
 // resolveTypeID takes an arbitrary type and resolves it to a logic.TypeID,
 // automatically creating an anonymous type if necessary
-func (p pkgParser) resolveTypeID(ctx pkgParseContext, t types.Type) (out logic.TypeID, err error) {
+func (p pkgParser) resolveTypeID(ctx pkgParseContext, t types.Type) (out gen.TypeID, err error) {
 	switch t := t.(type) {
 	case *types.Named:
 		out, err = p.createNamedOrAliasType(t)
@@ -314,7 +314,7 @@ func (p pkgParser) resolveTypeID(ctx pkgParseContext, t types.Type) (out logic.T
 			"uint64",
 			"float32",
 			"float64":
-			out = logic.BuiltinTypeID(t.Name())
+			out = gen.BuiltinTypeID(t.Name())
 			return
 		}
 		err = fmt.Errorf(
@@ -376,7 +376,7 @@ func (p pkgParser) resolveTypeID(ctx pkgParseContext, t types.Type) (out logic.T
 }
 
 // createNamedOrAliasType imports the type as private if it doesn't already exist
-func (p pkgParser) createNamedOrAliasType(t types.Type) (id logic.TypeID, err error) {
+func (p pkgParser) createNamedOrAliasType(t types.Type) (id gen.TypeID, err error) {
 	switch t := t.(type) {
 	case *types.Named:
 		id = typeNameToID(t.Obj())
@@ -391,7 +391,7 @@ func (p pkgParser) createNamedOrAliasType(t types.Type) (id logic.TypeID, err er
 			return
 		}
 
-		var typ logic.Type
+		var typ gen.Type
 		typ, err = p.convertType(pkgParseContext{
 			NearestAncestor: name,
 		}, id, t.Underlying())
@@ -400,7 +400,7 @@ func (p pkgParser) createNamedOrAliasType(t types.Type) (id logic.TypeID, err er
 			return
 		}
 
-		p.out.Types[t.Obj().Name()] = logic.TypeEntry{
+		p.out.Types[t.Obj().Name()] = gen.TypeEntry{
 			Type:      typ,
 			Anonymous: false,
 			Private:   true,
@@ -419,7 +419,7 @@ func (p pkgParser) createNamedOrAliasType(t types.Type) (id logic.TypeID, err er
 			return
 		}
 
-		var typ logic.Type
+		var typ gen.Type
 		typ, err = p.convertType(pkgParseContext{
 			NearestAncestor: name,
 		}, id, t.Underlying())
@@ -428,7 +428,7 @@ func (p pkgParser) createNamedOrAliasType(t types.Type) (id logic.TypeID, err er
 			return
 		}
 
-		p.out.Types[t.Obj().Name()] = logic.TypeEntry{
+		p.out.Types[t.Obj().Name()] = gen.TypeEntry{
 			Type:      typ,
 			Anonymous: false,
 			Private:   true,
@@ -440,9 +440,9 @@ func (p pkgParser) createNamedOrAliasType(t types.Type) (id logic.TypeID, err er
 	return
 }
 
-func (p pkgParser) createAnonymousType(ctx pkgParseContext, t types.Type) (id logic.TypeID, err error) {
+func (p pkgParser) createAnonymousType(ctx pkgParseContext, t types.Type) (id gen.TypeID, err error) {
 	name := fmt.Sprintf("%s%s", ctx.NearestAncestor, ctx.Path)
-	id = logic.TypeID{
+	id = gen.TypeID{
 		Pkg:  p.out.Path,
 		Name: name,
 	}
@@ -453,7 +453,7 @@ func (p pkgParser) createAnonymousType(ctx pkgParseContext, t types.Type) (id lo
 		return
 	}
 
-	p.out.Types[name] = logic.TypeEntry{
+	p.out.Types[name] = gen.TypeEntry{
 		Type:      conv,
 		Anonymous: true,
 		Private:   true,
@@ -461,9 +461,9 @@ func (p pkgParser) createAnonymousType(ctx pkgParseContext, t types.Type) (id lo
 	return
 }
 
-func typeNameToID(typeName *types.TypeName) logic.TypeID {
-	return logic.TypeID{
-		Pkg:  logic.PkgPath(typeName.Pkg().Path()),
+func typeNameToID(typeName *types.TypeName) gen.TypeID {
+	return gen.TypeID{
+		Pkg:  gen.PkgPath(typeName.Pkg().Path()),
 		Name: typeName.Name(),
 	}
 }
