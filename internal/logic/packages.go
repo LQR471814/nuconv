@@ -5,7 +5,6 @@ import (
 	"path"
 
 	"github.com/dave/jennifer/jen"
-	"github.com/zeebo/xxh3"
 )
 
 // PkgPath is a fully-qualified pkg path
@@ -41,59 +40,6 @@ func NewPackage(path PkgPath) Package {
 
 type GenContext struct {
 	Out *jen.File
-}
-
-type Imports struct {
-	RelativeTo PkgPath
-	Packages   map[PkgPath]Package
-	Imported   map[PkgPath]string
-}
-
-func NewImports(relativeTo PkgPath, pkgs map[PkgPath]Package) Imports {
-	return Imports{
-		RelativeTo: relativeTo,
-		Packages:   pkgs,
-		Imported:   make(map[PkgPath]string),
-	}
-}
-
-// ResolvePkgName maps a TypeID to the pkg name it is imported as, if it is a
-// local type, importName will be ""
-func (i Imports) ResolvePkgName(id TypeID) (importName string, err error) {
-	if id.Pkg == i.RelativeTo {
-		return
-	}
-	target, ok := i.Packages[id.Pkg]
-	if !ok {
-		err = fmt.Errorf("package %s was not found", id.Pkg)
-		return
-	}
-	importName = fmt.Sprintf("pkg%d", xxh3.Hash([]byte(id.Pkg)))
-	i.Imported[target.Path] = importName
-	return
-}
-
-// ResolveTypeQual resolves a TypeID to an identifier or a Qual with the
-// appropriate package import
-func (i Imports) ResolveTypeQual(id TypeID, stmt *jen.Statement) (qual *jen.Statement, err error) {
-	importName, err := i.ResolvePkgName(id)
-	if err != nil {
-		return
-	}
-	if stmt != nil {
-		if importName == "" {
-			qual = stmt.Id(id.Name)
-		} else {
-			qual = stmt.Qual(importName, id.Name)
-		}
-	} else {
-		if importName == "" {
-			qual = jen.Id(id.Name)
-		} else {
-			qual = jen.Qual(importName, id.Name)
-		}
-	}
-	return
 }
 
 type Generator struct {
