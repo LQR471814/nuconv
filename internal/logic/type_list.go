@@ -39,11 +39,10 @@ func (listtype ListType) Parser(g GenContext) (out *jen.Statement, err error) {
 			cast,
 			handle,
 			jen.Id(id_out).Op("=").Make(listtype.ID.Qual(nil)),
-			jen.For(jen.Id(id_i).Op(":=").Range().Len(jen.Id(id_typed))).Block(
-				listtype.ElementType.ParserQual(jen.List(
-					jen.Id(id_out).Index(jen.Id(id_i)),
-					jen.Id(id_err_val),
-				).Op("="), jen.Id(id_typed).Index(jen.Id(id_i))),
+			jen.For(jen.List(jen.Id(id_i), jen.Id(id_el)).Op(":=").Range().Id(id_typed)).Block(
+				listtype.ElementType.ParserQual(
+					jen.List(jen.Id(id_out).Index(jen.Id(id_i)), jen.Id(id_err_val)).Op("="),
+					jen.Id(id_el)),
 				jen.If(jen.Id(id_err_val).Op("!=").Nil()).Block(
 					jen.Return(),
 				),
@@ -55,5 +54,29 @@ func (listtype ListType) Parser(g GenContext) (out *jen.Statement, err error) {
 
 // Serializer returns a statement which declares the serializer function
 func (listtype ListType) Serializer(g GenContext) (out *jen.Statement, err error) {
-	panic("not implemented") // TODO: Implement
+	out = g.Out.Func().
+		Id(NewSerializerID(listtype.ID)).
+		Params(listtype.ID.Qual(jen.Id(id_value))).
+		Params(
+			nuValueParam(id_out),
+			errParam(),
+		).
+		Block(
+			jen.Id(id_tmp).Op(":=").Make(
+				jen.Index().Qual(nu_pkg, "Value"),
+				jen.Len(jen.Id(id_value)),
+			),
+			jen.For(jen.List(jen.Id(id_i), jen.Id(id_el)).Op(":=").Range().Id(id_value)).Block(
+				listtype.ElementType.SerializerQual(
+					jen.List(jen.Id(id_tmp).Index(jen.Id(id_i)), jen.Id(id_err_val)).Op("="),
+					jen.Id(id_el),
+				),
+				jen.If(jen.Id(id_err_val).Op("!=").Nil()).Block(
+					jen.Return(),
+				),
+			),
+			jen.Id(id_out).Op("=").Qual(nu_pkg, "ToValue").Call(jen.Id(id_tmp)),
+			jen.Return(),
+		)
+	return
 }

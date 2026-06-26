@@ -8,6 +8,24 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func testType(t *testing.T, typ Type, expected string) {
+	c := GenContext{
+		Out: jen.NewFilePath("test/pkg"),
+	}
+
+	typ.Definition(c)
+	typ.Parser(c)
+	typ.Serializer(c)
+
+	buf := bytes.NewBuffer(nil)
+	err := c.Out.Render(buf)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	require.Equal(t, expected, buf.String())
+}
+
 func TestArrayType(t *testing.T) {
 	const expect = `package pkg
 
@@ -16,8 +34,6 @@ import (
 	nuplugin "github.com/ainvaltin/nu-plugin"
 	types "github.com/ainvaltin/nu-plugin/types"
 )
-
-type Foo [3]string
 
 var NuDefFoo = types.List(string)
 
@@ -53,13 +69,7 @@ func NuSerializeFoo(v [3]Foo) (out nuplugin.Value, err error) {
 }
 `
 
-	c := GenContext{
-		Out: jen.NewFilePath("test/pkg"),
-	}
-
-	c.Out.Type().Id("Foo").Index(jen.Lit(3)).String()
-
-	typeFoo := ArrayType{
+	foo := ArrayType{
 		ID: TypeID{
 			Pkg:  "test/pkg",
 			Name: "Foo",
@@ -67,15 +77,6 @@ func NuSerializeFoo(v [3]Foo) (out nuplugin.Value, err error) {
 		Length:      3,
 		ElementType: BuiltinTypeID("string"),
 	}
-	typeFoo.Definition(c)
-	typeFoo.Parser(c)
-	typeFoo.Serializer(c)
 
-	buf := bytes.NewBuffer(nil)
-	err := c.Out.Render(buf)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	require.Equal(t, expect, buf.String())
+	testType(t, foo, expect)
 }

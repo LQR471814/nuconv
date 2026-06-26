@@ -8,13 +8,14 @@ const (
 )
 
 const (
-	id_i       = "i"
-	id_out     = "out"
-	id_value   = "v"
-	id_ok      = "ok"
-	id_typed   = "typed"
-	id_err_val = "err"
-	id_tmp     = "tmp"
+	id_i           = "i"
+	id_el          = "e"
+	id_out         = "out"
+	id_value       = "v"
+	id_ok          = "ok"
+	id_typed       = "typed"
+	id_err_val     = "err"
+	id_tmp         = "tmp"
 	id_wrap_err_fn = "nuconvWrapErr"
 )
 
