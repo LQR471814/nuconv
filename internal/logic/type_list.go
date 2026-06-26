@@ -19,14 +19,14 @@ func (listtype ListType) TypeID() TypeID {
 func (listtype ListType) Definition(g GenContext) (out *jen.Statement, err error) {
 	out = typeDefTemplate(g, listtype).
 		Qual(nu_types_pkg, "List").
-		Call(listtype.ElementType.Qual(nil))
+		Call(listtype.ElementType.DefQual(nil))
 	return
 }
 
 // Parser returns a statement which declares the parsing function
 func (listtype ListType) Parser(g GenContext) (out *jen.Statement, err error) {
 	out = parserTypeTemplate(
-		g, listtype,
+		g, listtype, jen.Index().Qual(nu_pkg, "Value"),
 		jen.Id(id_out).Op("=").Make(listtype.ID.Qual(nil)),
 		jen.For(jen.List(jen.Id(id_i), jen.Id(id_el)).Op(":=").Range().Id(id_typed)).Block(
 			listtype.ElementType.ParserQual(

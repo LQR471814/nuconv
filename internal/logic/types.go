@@ -107,7 +107,7 @@ func (id TypeID) ParserQual(prev, value *jen.Statement) *jen.Statement {
 	}
 	// empty pkg indicates a builtin type
 	if id.Pkg == "" {
-		return prev.Id(id_wrap_err_fn).Call(jen.Id(id.Name).Call(value))
+		return prev.Id(id_try_cast_fn).Types(jen.Id(id.Name)).Call(value)
 	}
 	return prev.Qual(string(id.Pkg), NewParserID(id)).Call(value)
 }

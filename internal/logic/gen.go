@@ -57,9 +57,10 @@ func typeDefTemplate(g GenContext, t Type) *jen.Statement {
 func parserTypeTemplate(
 	g GenContext,
 	t Type,
+	castType *jen.Statement,
 	statements ...jen.Code,
 ) *jen.Statement {
-	cast, handle := parserCastValue(jen.Index().Qual(nu_pkg, "Value"))
+	cast, handle := parserCastValue(castType)
 
 	block := []jen.Code{cast, handle}
 	block = append(block, statements...)
@@ -89,12 +90,12 @@ func wrapErrFn(g GenContext) {
 	g.Out.Func().
 		Id(id_wrap_err_fn).
 		Types(jen.Id(id_T).Any()).
-		Params(jen.Id(id_value)).
-		Params(jen.Id(id_T)).
+		Params(jen.Id(id_value).Id(id_T)).
+		Params(jen.Id(id_T), jen.Error()).
 		Block(jen.Return(jen.Id(id_value), jen.Nil()))
 }
 
-func tryCastFn(g GenContext, typ *jen.Statement) {
+func tryCastFn(g GenContext) {
 	g.Out.Func().
 		Id(id_try_cast_fn).
 		Types(jen.Id(id_T).Any()).
@@ -103,7 +104,7 @@ func tryCastFn(g GenContext, typ *jen.Statement) {
 		Block(
 			jen.List(jen.Id(id_out), jen.Id(id_ok)).
 				Op(":=").
-				Id(id_value).Dot("Value").Assert(typ),
+				Id(id_value).Dot("Value").Assert(jen.Id(id_T)),
 			jen.If(jen.Op("!").Id(id_ok)).Block(
 				jen.Id(id_err_val).Op("=").Qual("fmt", "Errorf").Call(
 					jen.Lit("expected %T got %T"),

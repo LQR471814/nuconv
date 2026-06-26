@@ -18,7 +18,7 @@ func (arraytype ArrayType) TypeID() TypeID {
 func (arraytype ArrayType) Definition(g GenContext) (out *jen.Statement, err error) {
 	out = typeDefTemplate(g, arraytype).
 		Qual(nu_types_pkg, "List").
-		Call(arraytype.ElementType.Qual(nil))
+		Call(arraytype.ElementType.DefQual(nil))
 	return
 }
 
@@ -26,7 +26,7 @@ func (arraytype ArrayType) Definition(g GenContext) (out *jen.Statement, err err
 func (arraytype ArrayType) Parser(g GenContext) (out *jen.Statement, err error) {
 	arrayLen := int(arraytype.Length)
 	out = parserTypeTemplate(
-		g, arraytype,
+		g, arraytype, jen.Index().Qual(nu_pkg, "Value"),
 		jen.If(
 			jen.Len(jen.Id(id_typed)).
 				Op("!=").
@@ -72,7 +72,7 @@ func (arraytype ArrayType) Serializer(g GenContext) (out *jen.Statement, err err
 			arraytype.ElementType.SerializerQual(jen.List(
 				jen.Id(id_tmp).Index(jen.Id(id_i)),
 				jen.Id(id_err_val),
-			).Op("="), jen.Id(id_typed).Index(jen.Id(id_i))),
+			).Op("="), jen.Id(id_value).Index(jen.Id(id_i))),
 			jen.If(jen.Id(id_err_val).Op("!=").Nil()).Block(
 				jen.Id(id_err_val).Op("=").Qual("fmt", "Errorf").Call(
 					jen.Lit("serialize element (%d): %w"),
