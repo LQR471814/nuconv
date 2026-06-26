@@ -47,7 +47,7 @@ func parserCastValue(typ *jen.Statement) (cast, handle *jen.Statement) {
 }
 
 // var NuDef... =
-func typeDefTemplate(g GenContext, t Type) *jen.Statement {
+func defTemplate(g GenContext, t Type) *jen.Statement {
 	return g.Out.Var().Id(NewTypeDefID(t.TypeID())).Op("=")
 }
 

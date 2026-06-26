@@ -16,7 +16,7 @@ func (arraytype ArrayType) TypeID() TypeID {
 
 // Definition returns a statement which declares the type definition
 func (arraytype ArrayType) Definition(g GenContext) (out *jen.Statement, err error) {
-	out = typeDefTemplate(g, arraytype).
+	out = defTemplate(g, arraytype).
 		Qual(nu_types_pkg, "List").
 		Call(arraytype.ElementType.DefQual(nil))
 	return

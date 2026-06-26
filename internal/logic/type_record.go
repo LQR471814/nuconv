@@ -23,7 +23,7 @@ func (recordtype RecordType) Definition(g GenContext) (out *jen.Statement, err e
 	for _, field := range recordtype.Fields {
 		typeFields[jen.Lit(field.NuName)] = field.Type.DefQual(nil)
 	}
-	out = typeDefTemplate(g, recordtype).
+	out = defTemplate(g, recordtype).
 		Qual(nu_types_pkg, "Record").
 		Call(jen.Qual(nu_types_pkg, "RecordDef").Values(typeFields))
 	return

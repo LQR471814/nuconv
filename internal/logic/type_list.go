@@ -17,7 +17,7 @@ func (listtype ListType) TypeID() TypeID {
 
 // Definition returns a statement which declares the type definition
 func (listtype ListType) Definition(g GenContext) (out *jen.Statement, err error) {
-	out = typeDefTemplate(g, listtype).
+	out = defTemplate(g, listtype).
 		Qual(nu_types_pkg, "List").
 		Call(listtype.ElementType.DefQual(nil))
 	return
