@@ -44,3 +44,42 @@ func parserCastValue(typ *jen.Statement) (cast, handle *jen.Statement) {
 	)
 	return
 }
+
+// var NuDef... =
+func typeDefTemplate(g GenContext, t Type) *jen.Statement {
+	return g.Out.Var().Id(NewTypeDefID(t.TypeID())).Op("=")
+}
+
+//	func NuParser...(v nu.Value) (out ..., err error) {
+//	  // cast type
+//	}
+func parserTypeTemplate(
+	g GenContext,
+	t Type,
+	statements ...jen.Code,
+) *jen.Statement {
+	cast, handle := parserCastValue(jen.Index().Qual(nu_pkg, "Value"))
+
+	block := []jen.Code{cast, handle}
+	block = append(block, statements...)
+
+	return g.Out.Func().
+		Id(NewParserID(t.TypeID())).
+		Params(nuValueParam(id_value)).
+		Params(t.TypeID().Qual(jen.Id(id_out)), errParam()).
+		Block(block...)
+}
+
+// func NuSerializer...(v nu.Value) (out ..., err error) {
+// }
+func serializerTypeTemplate(
+	g GenContext,
+	t Type,
+	statements ...jen.Code,
+) *jen.Statement {
+	return g.Out.Func().
+		Id(NewSerializerID(t.TypeID())).
+		Params(t.TypeID().Qual(jen.Id(id_value))).
+		Params(nuValueParam(id_out), errParam()).
+		Block(statements...)
+}

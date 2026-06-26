@@ -56,7 +56,7 @@ func NuParseFoo(v nuplugin.Value) (out Foo, err error) {
 	}
 	return
 }
-func NuSerializeFoo(v [3]Foo) (out nuplugin.Value, err error) {
+func NuSerializeFoo(v Foo) (out nuplugin.Value, err error) {
 	tmp := make([]nuplugin.Value, 3)
 	for i := range 3 {
 		tmp[i], err = nuconvWrapErr(nuplugin.ToValue(typed[i]))
