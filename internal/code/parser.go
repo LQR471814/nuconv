@@ -186,10 +186,6 @@ func (p pkgParser) convertType(ctx pkgParseContext, typeID logic.TypeID, t types
 		err = fmt.Errorf("interface/generic/union not yet implemented")
 		return
 	case *types.Basic:
-		out = logic.Primitive{
-			ID:     typeID,
-			GoType: t.Name(),
-		}
 		// we return zero value because a basic type will be handled separately
 		// by the generator
 		return
