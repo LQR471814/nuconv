@@ -46,6 +46,11 @@ func (arraytype ArrayType) Parser(g GenContext) (out *jen.Statement, err error) 
 				jen.Id(id_err_val),
 			).Op("="), jen.Id(id_typed).Index(jen.Id(id_i))),
 			jen.If(jen.Id(id_err_val).Op("!=").Nil()).Block(
+				jen.Id(id_err_val).Op("=").Qual("fmt", "Errorf").Call(
+					jen.Lit("parse element (%d): %w"),
+					jen.Id(id_i),
+					jen.Id(id_err_val),
+				),
 				jen.Return(),
 			),
 		),
@@ -69,6 +74,11 @@ func (arraytype ArrayType) Serializer(g GenContext) (out *jen.Statement, err err
 				jen.Id(id_err_val),
 			).Op("="), jen.Id(id_typed).Index(jen.Id(id_i))),
 			jen.If(jen.Id(id_err_val).Op("!=").Nil()).Block(
+				jen.Id(id_err_val).Op("=").Qual("fmt", "Errorf").Call(
+					jen.Lit("serialize element (%d): %w"),
+					jen.Id(id_i),
+					jen.Id(id_err_val),
+				),
 				jen.Return(),
 			),
 		),

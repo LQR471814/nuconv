@@ -38,9 +38,9 @@ import (
 var NuDefFoo = types.List(string)
 
 func NuParseFoo(v nuplugin.Value) (out Foo, err error) {
-	typed, ok := v.Value.([]nuplugin.Value)
-	if !ok {
-		err = fmt.Errorf("expected %T got %T", typed, v)
+	typed, err := tryCast[[]nuplugin.Value](v)
+	if err != nil {
+		err = fmt.Errorf("cast: %w", err)
 		return
 	}
 	if len(typed) != 3 {
@@ -51,6 +51,7 @@ func NuParseFoo(v nuplugin.Value) (out Foo, err error) {
 	for i := range 3 {
 		out[i], err = nuconvWrapErr(string(typed[i]))
 		if err != nil {
+			err = fmt.Errorf("parse element (%d): %w", i, err)
 			return
 		}
 	}
@@ -61,6 +62,7 @@ func NuSerializeFoo(v Foo) (out nuplugin.Value, err error) {
 	for i := range 3 {
 		tmp[i], err = nuconvWrapErr(nuplugin.ToValue(typed[i]))
 		if err != nil {
+			err = fmt.Errorf("serialize element (%d): %w", i, err)
 			return
 		}
 	}

@@ -8,6 +8,7 @@ const (
 )
 
 const (
+	id_T           = "T"
 	id_i           = "i"
 	id_el          = "e"
 	id_out         = "out"
@@ -17,6 +18,7 @@ const (
 	id_err_val     = "err"
 	id_tmp         = "tmp"
 	id_wrap_err_fn = "nuconvWrapErr"
+	id_try_cast_fn = "tryCast"
 )
 
 // v nu.Value
@@ -29,16 +31,15 @@ func errParam() *jen.Statement {
 	return jen.Id(id_err_val).Id("error")
 }
 
-// typed, ok := v.(pkg.Type)
-// if !ok { err = fmt.Errorf(...); return }
+// typed, err := tryCast[pkg.Type](v)
+// if err != nil { err = fmt.Errorf("cast: %w", err); return }
 func parserCastValue(typ *jen.Statement) (cast, handle *jen.Statement) {
-	cast = jen.List(jen.Id(id_typed), jen.Id(id_ok)).
-		Op(":=").Id(id_value).Dot("Value").Assert(typ)
-	handle = jen.If(jen.Op("!").Id(id_ok)).Block(
+	cast = jen.List(jen.Id(id_typed), jen.Id(id_err_val)).
+		Op(":=").Id(id_try_cast_fn).Types(typ).Call(jen.Id(id_value))
+	handle = jen.If(jen.Id(id_err_val).Op("!=").Nil()).Block(
 		jen.Id(id_err_val).Op("=").Qual("fmt", "Errorf").Call(
-			jen.Lit("expected %T got %T"),
-			jen.Id(id_typed),
-			jen.Id(id_value),
+			jen.Lit("cast: %w"),
+			jen.Id(id_err_val),
 		),
 		jen.Return(),
 	)
@@ -82,4 +83,35 @@ func serializerTypeTemplate(
 		Params(t.TypeID().Qual(jen.Id(id_value))).
 		Params(nuValueParam(id_out), errParam()).
 		Block(statements...)
+}
+
+func wrapErrFn(g GenContext) {
+	g.Out.Func().
+		Id(id_wrap_err_fn).
+		Types(jen.Id(id_T).Any()).
+		Params(jen.Id(id_value)).
+		Params(jen.Id(id_T)).
+		Block(jen.Return(jen.Id(id_value), jen.Nil()))
+}
+
+func tryCastFn(g GenContext, typ *jen.Statement) {
+	g.Out.Func().
+		Id(id_try_cast_fn).
+		Types(jen.Id(id_T).Any()).
+		Params(jen.Id(id_value).Qual(nu_pkg, "Value")).
+		Params(jen.Id(id_out).Id(id_T), jen.Id(id_err_val).Error()).
+		Block(
+			jen.List(jen.Id(id_out), jen.Id(id_ok)).
+				Op(":=").
+				Id(id_value).Dot("Value").Assert(typ),
+			jen.If(jen.Op("!").Id(id_ok)).Block(
+				jen.Id(id_err_val).Op("=").Qual("fmt", "Errorf").Call(
+					jen.Lit("expected %T got %T"),
+					jen.Id(id_out),
+					jen.Id(id_value),
+				),
+				jen.Return(),
+			),
+			jen.Return(),
+		)
 }
