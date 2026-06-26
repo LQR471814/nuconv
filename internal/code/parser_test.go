@@ -190,8 +190,8 @@ func TestPkgParser(t *testing.T) {
 						Name: "Foo_Bar_Pointer",
 					},
 					Alternatives: []logic.TypeID{
-						{Pkg: "builtin", Name: "nil"},
-						{Pkg: "builtin", Name: "string"},
+						{Name: "nil"},
+						{Name: "string"},
 					},
 				},
 				Anonymous: true,
@@ -204,7 +204,6 @@ func TestPkgParser(t *testing.T) {
 						Name: "Foo_Baz_Slice",
 					},
 					ElementType: logic.TypeID{
-						Pkg:  "builtin",
 						Name: "int",
 					},
 				},

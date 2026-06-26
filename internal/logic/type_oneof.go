@@ -13,20 +13,20 @@ type OneofType struct {
 
 // ID returns the ID of the type
 func (oneoftype OneofType) TypeID() TypeID {
-	panic("not implemented") // TODO: Implement
+	return oneoftype.ID
 }
 
 // Definition returns a statement which declares the type definition
-func (oneoftype OneofType) Definition(g Generator) *jen.Statement {
+func (oneoftype OneofType) Definition(g GenContext) (out *jen.Statement, err error) {
 	panic("not implemented") // TODO: Implement
 }
 
 // Parser returns a statement which declares the parsing function
-func (oneoftype OneofType) Parser(g Generator) *jen.Statement {
+func (oneoftype OneofType) Parser(g GenContext) (out *jen.Statement, err error) {
 	panic("not implemented") // TODO: Implement
 }
 
 // Serializer returns a statement which declares the serializer function
-func (oneoftype OneofType) Serializer(g Generator) *jen.Statement {
+func (oneoftype OneofType) Serializer(g GenContext) (out *jen.Statement, err error) {
 	panic("not implemented") // TODO: Implement
 }

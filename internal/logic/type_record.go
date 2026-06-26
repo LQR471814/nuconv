@@ -12,21 +12,21 @@ type RecordType struct {
 
 // ID returns the ID of the type
 func (recordtype RecordType) TypeID() TypeID {
-	panic("not implemented") // TODO: Implement
+	return recordtype.ID
 }
 
 // Definition returns a statement which declares the type definition
-func (recordtype RecordType) Definition(g Generator) *jen.Statement {
+func (recordtype RecordType) Definition(g GenContext) (out *jen.Statement, err error) {
 	panic("not implemented") // TODO: Implement
 }
 
 // Parser returns a statement which declares the parsing function
-func (recordtype RecordType) Parser(g Generator) *jen.Statement {
+func (recordtype RecordType) Parser(g GenContext) (out *jen.Statement, err error) {
 	panic("not implemented") // TODO: Implement
 }
 
 // Serializer returns a statement which declares the serializer function
-func (recordtype RecordType) Serializer(g Generator) *jen.Statement {
+func (recordtype RecordType) Serializer(g GenContext) (out *jen.Statement, err error) {
 	panic("not implemented") // TODO: Implement
 }
 

@@ -13,21 +13,20 @@ type CustomType struct {
 
 // ID returns the ID of the type
 func (customtype CustomType) TypeID() TypeID {
-	panic("not implemented") // TODO: Implement
+	return customtype.ID
 }
 
 // Definition returns a statement which declares the type definition
-func (customtype CustomType) Definition(g Generator) *jen.Statement {
+func (customtype CustomType) Definition(g GenContext) (out *jen.Statement, err error) {
 	panic("not implemented") // TODO: Implement
 }
 
 // Parser returns a statement which declares the parsing function
-func (customtype CustomType) Parser(g Generator) *jen.Statement {
+func (customtype CustomType) Parser(g GenContext) (out *jen.Statement, err error) {
 	panic("not implemented") // TODO: Implement
 }
 
 // Serializer returns a statement which declares the serializer function
-func (customtype CustomType) Serializer(g Generator) *jen.Statement {
+func (customtype CustomType) Serializer(g GenContext) (out *jen.Statement, err error) {
 	panic("not implemented") // TODO: Implement
 }
-
