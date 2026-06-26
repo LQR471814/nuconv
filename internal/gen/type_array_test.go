@@ -74,7 +74,7 @@ func NuParseArray(v nuplugin.Value) (out Array, err error) {
 	}
 	out = make(Array)
 	for i := range 3 {
-		out[i], err = nuconvWrapErr(string(typed[i]))
+		out[i], err = tryCast[string](typed[i])
 		if err != nil {
 			err = fmt.Errorf("parse element (%d): %w", i, err)
 			return

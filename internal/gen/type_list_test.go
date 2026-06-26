@@ -21,7 +21,7 @@ func NuParselist(v nuplugin.Value) (out list, err error) {
 	}
 	out = make(list)
 	for i, e := range typed {
-		out[i], err = nuconvWrapErr(int(e))
+		out[i], err = tryCast[int](e)
 		if err != nil {
 			err = fmt.Errorf("parse element (%d): %w", i, err)
 			return
