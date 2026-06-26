@@ -12,38 +12,10 @@ func newStatement() *jen.Statement {
 	return &jen.Statement{}
 }
 
+// BuiltinTypeID returns a TypeID for a built-in Go type
 func BuiltinTypeID(builtin string) TypeID {
 	return TypeID{Name: builtin}
 }
-
-/*
-type NuType string
-
-const (
-	TYPE_ANY      NuType = "Any"
-	TYPE_BINARY          = "Binary"
-	TYPE_BLOCK           = "Block"
-	TYPE_BOOL            = "Bool"
-	TYPE_CELLPATH        = "Cellpath"
-	TYPE_CLOSURE         = "Closure"
-	TYPE_CUSTOM          = "Custom"
-	TYPE_DATE            = "Date"
-	TYPE_DURATION        = "Duration"
-	TYPE_ERROR           = "Error"
-	TYPE_FILESIZE        = "Filesize"
-	TYPE_FLOAT           = "Float"
-	TYPE_GLOB            = "Glob"
-	TYPE_INT             = "Int"
-	TYPE_LIST            = "List"
-	TYPE_NOTHING         = "Nothing"
-	TYPE_NUMBER          = "Number"
-	TYPE_ONEOF           = "Oneof"
-	TYPE_RANGE           = "Range"
-	TYPE_RECORD          = "Record"
-	TYPE_STRING          = "String"
-	TYPE_TABLE           = "Table"
-)
-*/
 
 // TypeID represents a fully-qualified type identifier
 type TypeID struct {
@@ -132,6 +104,8 @@ func (id TypeID) String() string {
 	return fmt.Sprintf("%s.%s", id.Pkg, id.Name)
 }
 
+// Type is the interface that must be implemented for any generate-able
+// type.
 type Type interface {
 	// ID returns the ID of the type
 	TypeID() TypeID
