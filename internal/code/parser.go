@@ -198,7 +198,7 @@ func (p pkgParser) convertType(ctx pkgParseContext, typeID logic.TypeID, t types
 		}
 		out = logic.OneofType{
 			ID: typeID,
-			Alternatives: []logic.TypeID{
+			Alts: []logic.TypeID{
 				logic.BuiltinTypeID("nil"),
 				elemTypeID,
 			},

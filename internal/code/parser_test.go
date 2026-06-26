@@ -189,7 +189,7 @@ func TestPkgParser(t *testing.T) {
 						Pkg:  example_pkg,
 						Name: "Foo_Bar_Pointer",
 					},
-					Alternatives: []logic.TypeID{
+					Alts: []logic.TypeID{
 						{Name: "nil"},
 						{Name: "string"},
 					},
