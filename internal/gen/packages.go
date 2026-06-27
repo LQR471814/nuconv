@@ -1,7 +1,6 @@
 package gen
 
 import (
-	"fmt"
 	"path"
 
 	"github.com/dave/jennifer/jen"
@@ -40,24 +39,4 @@ func NewPackage(path PkgPath) Package {
 
 type GenContext struct {
 	Out *jen.File
-}
-
-type Generator struct {
-	// Packages maps path to package
-	Packages map[PkgPath]Package
-}
-
-// ResolveType resolves a TypeID to its type
-func (g Generator) ResolveType(id TypeID) (t TypeEntry, err error) {
-	pkg, ok := g.Packages[id.Pkg]
-	if !ok {
-		err = fmt.Errorf("package '%s' not found", id.Pkg)
-		return
-	}
-	t, ok = pkg.Types[id.Name]
-	if !ok {
-		err = fmt.Errorf("type '%s' not found in package '%s'", id.Name, id.Pkg)
-		return
-	}
-	return
 }
