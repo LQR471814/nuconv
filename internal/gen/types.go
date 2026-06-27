@@ -77,9 +77,17 @@ func (id TypeID) ParserQual(prev, value *jen.Statement) *jen.Statement {
 	if prev == nil {
 		prev = newStatement()
 	}
-	// empty pkg indicates a builtin type
-	if id.Pkg == "" {
-		return prev.Id(id_try_cast_fn).Types(jen.Id(id.Name)).Call(value)
+	switch id.Pkg {
+	case "":
+		// empty pkg indicates a builtin type
+		return prev.Id(id_try_cast_fn).Types(jen.Id(id.Name)).Call(value.Dot("Value"))
+	case "time":
+		switch id.Name {
+		case "Time":
+			return prev.Id(id_try_cast_fn).Types(jen.Qual("time", "Time")).Call(value.Dot("Value"))
+		case "Duration":
+			return prev.Id(id_try_cast_fn).Types(jen.Qual("time", "Duration")).Call(value.Dot("Value"))
+		}
 	}
 	return prev.Qual(string(id.Pkg), NewParserID(id)).Call(value)
 }
@@ -90,8 +98,9 @@ func (id TypeID) SerializerQual(prev, value *jen.Statement) *jen.Statement {
 	if prev == nil {
 		prev = newStatement()
 	}
-	// empty pkg indicates a builtin type
-	if id.Pkg == "" {
+	if id.Pkg == "" || (id.Pkg == "time" && (id.Name == "Time" || id.Name == "Duration")) {
+		// empty pkg indicates a builtin type
+		// time.Time and time.Duration are also built-in
 		return prev.Id(id_wrap_err_fn).Call(jen.Qual(nu_pkg, "ToValue").Call(value))
 	}
 	return prev.Qual(string(id.Pkg), NewSerializerID(id)).Call(value)

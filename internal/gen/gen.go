@@ -11,6 +11,7 @@ const (
 	id_T           = "T"
 	id_i           = "i"
 	id_el          = "e"
+	id_key         = "key"
 	id_out         = "out"
 	id_value       = "v"
 	id_ok          = "ok"

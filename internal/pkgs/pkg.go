@@ -204,14 +204,15 @@ func (p pkgParser) convertType(ctx pkgParseContext, typeID gen.TypeID, t types.T
 		}
 		return
 	case *types.Map:
-		_, err = p.resolveTypeID(ctx, t.Elem())
+		var elemTypeID gen.TypeID
+		elemTypeID, err = p.resolveTypeID(ctx, t.Elem())
 		if err != nil {
 			err = fmt.Errorf("resolve type id (%v): %w", typeID, err)
 			return
 		}
-		out = gen.RecordType{
-			ID:     typeID,
-			Fields: nil,
+		out = gen.MapType{
+			ID:    typeID,
+			Value: elemTypeID,
 		}
 		return
 	case *types.Struct:

@@ -49,7 +49,7 @@ func (arraytype ArrayType) Parser(g GenContext) (out *jen.Statement, err error) 
 			arraytype.ElementType.ParserQual(jen.List(
 				jen.Id(id_out).Index(jen.Id(id_i)),
 				jen.Id(id_err_val),
-			).Op("="), jen.Id(id_typed).Index(jen.Id(id_i)).Dot("Value")),
+			).Op("="), jen.Id(id_typed).Index(jen.Id(id_i))),
 			jen.If(jen.Id(id_err_val).Op("!=").Nil()).Block(
 				jen.Id(id_err_val).Op("=").Qual("fmt", "Errorf").Call(
 					jen.Lit("parse element (%d): %w"),

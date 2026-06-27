@@ -35,7 +35,7 @@ func (listtype ListType) Parser(g GenContext) (out *jen.Statement, err error) {
 		jen.For(jen.List(jen.Id(id_i), jen.Id(id_el)).Op(":=").Range().Id(id_typed)).Block(
 			listtype.ElementType.ParserQual(
 				jen.List(jen.Id(id_out).Index(jen.Id(id_i)), jen.Id(id_err_val)).Op("="),
-				jen.Id(id_el).Dot("Value"),
+				jen.Id(id_el),
 			),
 			jen.If(jen.Id(id_err_val).Op("!=").Nil()).Block(
 				jen.Id(id_err_val).Op("=").Qual("fmt", "Errorf").Call(

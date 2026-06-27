@@ -38,7 +38,7 @@ func (optionaltype OptionalType) Parser(g GenContext) (out *jen.Statement, err e
 		optionaltype.Elem.Qual(jen.Var().Id(id_tmp)),
 		optionaltype.Elem.ParserQual(
 			jen.List(jen.Id(id_tmp), jen.Id(id_err_val)).Op("="),
-			jen.Id(id_value).Dot("Value"),
+			jen.Id(id_value),
 		),
 		jen.If(jen.Id(id_err_val).Op("!=").Nil()).Block(
 			jen.Id(id_err_val).Op("=").Qual("fmt", "Errorf").Call(

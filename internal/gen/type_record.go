@@ -39,7 +39,7 @@ func (recordtype RecordType) Parser(g GenContext) (out *jen.Statement, err error
 			field.Type.ParserQual(
 				jen.List(jen.Id(id_out).Dot(field.GoName), jen.Id(id_err_val)).
 					Op("="),
-				jen.Id(id_typed).Index(jen.Lit(field.NuName)).Dot("Value"),
+				jen.Id(id_typed).Index(jen.Lit(field.NuName)),
 			),
 			jen.If(jen.Id(id_err_val).Op("!=").Nil()).Block(
 				jen.Id(id_err_val).Op("=").Qual("fmt", "Errorf").Call(
