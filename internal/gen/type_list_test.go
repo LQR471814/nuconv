@@ -14,14 +14,14 @@ import (
 var NuDeflist = types.List(types.Int())
 
 func NuParselist(v nuplugin.Value) (out list, err error) {
-	typed, err := tryCast[[]nuplugin.Value](v)
+	typed, err := tryCast[[]nuplugin.Value](v.Value)
 	if err != nil {
 		err = fmt.Errorf("cast: %w", err)
 		return
 	}
 	out = make(list)
 	for i, e := range typed {
-		out[i], err = tryCast[int](e)
+		out[i], err = tryCast[int](e.Value)
 		if err != nil {
 			err = fmt.Errorf("parse element (%d): %w", i, err)
 			return

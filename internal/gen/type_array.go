@@ -25,8 +25,13 @@ func (arraytype ArrayType) Definition(g GenContext) (out *jen.Statement, err err
 // Parser returns a statement which declares the parsing function
 func (arraytype ArrayType) Parser(g GenContext) (out *jen.Statement, err error) {
 	arrayLen := int(arraytype.Length)
+
+	cast, errHandle := castValueBlock(jen.Index().Qual(nu_pkg, "Value"))
+
 	out = parserTypeTemplate(
-		g, arraytype, jen.Index().Qual(nu_pkg, "Value"),
+		g, arraytype,
+		cast,
+		errHandle,
 		jen.If(
 			jen.Len(jen.Id(id_typed)).
 				Op("!=").
@@ -44,7 +49,7 @@ func (arraytype ArrayType) Parser(g GenContext) (out *jen.Statement, err error) 
 			arraytype.ElementType.ParserQual(jen.List(
 				jen.Id(id_out).Index(jen.Id(id_i)),
 				jen.Id(id_err_val),
-			).Op("="), jen.Id(id_typed).Index(jen.Id(id_i))),
+			).Op("="), jen.Id(id_typed).Index(jen.Id(id_i)).Dot("Value")),
 			jen.If(jen.Id(id_err_val).Op("!=").Nil()).Block(
 				jen.Id(id_err_val).Op("=").Qual("fmt", "Errorf").Call(
 					jen.Lit("parse element (%d): %w"),

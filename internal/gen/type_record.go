@@ -31,13 +31,15 @@ func (recordtype RecordType) Definition(g GenContext) (out *jen.Statement, err e
 
 // Parser returns a statement which declares the parsing function
 func (recordtype RecordType) Parser(g GenContext) (out *jen.Statement, err error) {
-	var block []jen.Code
+	cast, errHandle := castValueBlock(jen.Map(jen.String()).Qual(nu_pkg, "Value"))
+
+	block := []jen.Code{cast, errHandle}
 	for _, field := range recordtype.Fields {
 		block = append(block,
 			field.Type.ParserQual(
 				jen.List(jen.Id(id_out).Dot(field.GoName), jen.Id(id_err_val)).
 					Op("="),
-				jen.Id(id_typed).Index(jen.Lit(field.NuName)),
+				jen.Id(id_typed).Index(jen.Lit(field.NuName)).Dot("Value"),
 			),
 			jen.If(jen.Id(id_err_val).Op("!=").Nil()).Block(
 				jen.Id(id_err_val).Op("=").Qual("fmt", "Errorf").Call(
@@ -57,7 +59,6 @@ func (recordtype RecordType) Parser(g GenContext) (out *jen.Statement, err error
 	out = parserTypeTemplate(
 		g,
 		recordtype,
-		jen.Map(jen.String()).Qual(nu_pkg, "Value"),
 		block...,
 	)
 	return

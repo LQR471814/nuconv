@@ -173,12 +173,9 @@ func (p pkgParser) convertType(ctx pkgParseContext, typeID gen.TypeID, t types.T
 			err = fmt.Errorf("resolve type id (%v): %w", typeID, err)
 			return
 		}
-		out = gen.OneofType{
-			ID: typeID,
-			Alts: []gen.TypeID{
-				gen.BuiltinTypeID("nil"),
-				elemTypeID,
-			},
+		out = gen.OptionalType{
+			ID:   typeID,
+			Elem: elemTypeID,
 		}
 		return
 	case *types.Array:

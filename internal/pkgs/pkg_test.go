@@ -184,15 +184,12 @@ func TestPkgParser(t *testing.T) {
 				Private:   true,
 			},
 			"Foo_Bar_Pointer": {
-				Type: gen.OneofType{
+				Type: gen.OptionalType{
 					ID: gen.TypeID{
 						Pkg:  example_pkg,
 						Name: "Foo_Bar_Pointer",
 					},
-					Alts: []gen.TypeID{
-						{Name: "nil"},
-						{Name: "string"},
-					},
+					Elem: gen.BuiltinTypeID("string"),
 				},
 				Anonymous: true,
 				Private:   true,
@@ -203,9 +200,7 @@ func TestPkgParser(t *testing.T) {
 						Pkg:  example_pkg,
 						Name: "Foo_Baz_Slice",
 					},
-					ElementType: gen.TypeID{
-						Name: "int",
-					},
+					ElementType: gen.BuiltinTypeID("int"),
 				},
 				Anonymous: true,
 				Private:   true,

@@ -63,7 +63,7 @@ import (
 var NuDefArray = types.List(types.String())
 
 func NuParseArray(v nuplugin.Value) (out Array, err error) {
-	typed, err := tryCast[[]nuplugin.Value](v)
+	typed, err := tryCast[[]nuplugin.Value](v.Value)
 	if err != nil {
 		err = fmt.Errorf("cast: %w", err)
 		return
@@ -74,7 +74,7 @@ func NuParseArray(v nuplugin.Value) (out Array, err error) {
 	}
 	out = make(Array)
 	for i := range 3 {
-		out[i], err = tryCast[string](typed[i])
+		out[i], err = tryCast[string](typed[i].Value)
 		if err != nil {
 			err = fmt.Errorf("parse element (%d): %w", i, err)
 			return

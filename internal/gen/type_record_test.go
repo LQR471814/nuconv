@@ -19,17 +19,17 @@ var NuDefRecord = types.Record(types.RecordDef{
 })
 
 func NuParseRecord(v nuplugin.Value) (out Record, err error) {
-	typed, err := tryCast[map[string]nuplugin.Value](v)
+	typed, err := tryCast[map[string]nuplugin.Value](v.Value)
 	if err != nil {
 		err = fmt.Errorf("cast: %w", err)
 		return
 	}
-	out.Name, err = tryCast[string](typed["name"])
+	out.Name, err = tryCast[string](typed["name"].Value)
 	if err != nil {
 		err = fmt.Errorf("parse Name (name): %w", err)
 		return
 	}
-	out.Age, err = tryCast[int](typed["age"])
+	out.Age, err = tryCast[int](typed["age"].Value)
 	if err != nil {
 		err = fmt.Errorf("parse Age (age): %w", err)
 		return

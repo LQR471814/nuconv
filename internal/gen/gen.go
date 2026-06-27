@@ -31,12 +31,12 @@ func errParam() *jen.Statement {
 	return jen.Id(id_err_val).Id("error")
 }
 
-// typed, err := tryCast[pkg.Type](v)
+// typed, err := tryCast[pkg.Type](v.Value)
 // if err != nil { err = fmt.Errorf("cast: %w", err); return }
-func parserCastValue(typ *jen.Statement) (cast, handle *jen.Statement) {
+func castValueBlock(typ *jen.Statement) (cast, errHandle *jen.Statement) {
 	cast = jen.List(jen.Id(id_typed), jen.Id(id_err_val)).
-		Op(":=").Id(id_try_cast_fn).Types(typ).Call(jen.Id(id_value))
-	handle = jen.If(jen.Id(id_err_val).Op("!=").Nil()).Block(
+		Op(":=").Id(id_try_cast_fn).Types(typ).Call(jen.Id(id_value).Dot("Value"))
+	errHandle = jen.If(jen.Id(id_err_val).Op("!=").Nil()).Block(
 		jen.Id(id_err_val).Op("=").Qual("fmt", "Errorf").Call(
 			jen.Lit("cast: %w"),
 			jen.Id(id_err_val),
@@ -57,19 +57,13 @@ func defTemplate(g GenContext, t Type) *jen.Statement {
 func parserTypeTemplate(
 	g GenContext,
 	t Type,
-	castType *jen.Statement,
 	statements ...jen.Code,
 ) *jen.Statement {
-	cast, handle := parserCastValue(castType)
-
-	block := []jen.Code{cast, handle}
-	block = append(block, statements...)
-
 	return g.Out.Func().
 		Id(NewParserID(t.TypeID())).
 		Params(nuValueParam(id_value)).
 		Params(t.TypeID().Qual(jen.Id(id_out)), errParam()).
-		Block(block...)
+		Block(statements...)
 }
 
 // func NuSerializer...(v nu.Value) (out ..., err error) {
@@ -104,12 +98,12 @@ func tryCastFn(g GenContext) {
 	g.Out.Func().
 		Id(id_try_cast_fn).
 		Types(jen.Id(id_T).Any()).
-		Params(jen.Id(id_value).Qual(nu_pkg, "Value")).
+		Params(jen.Id(id_value).Any()).
 		Params(jen.Id(id_out).Id(id_T), jen.Id(id_err_val).Error()).
 		Block(
 			jen.List(jen.Id(id_out), jen.Id(id_ok)).
 				Op(":=").
-				Id(id_value).Dot("Value").Assert(jen.Id(id_T)),
+				Id(id_value).Assert(jen.Id(id_T)),
 			jen.If(jen.Op("!").Id(id_ok)).Block(
 				jen.Id(id_err_val).Op("=").Qual("fmt", "Errorf").Call(
 					jen.Lit("expected %T got %T"),
