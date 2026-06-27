@@ -35,12 +35,14 @@ func (p *Parser) Load(patterns ...string) (err error) {
 		Dir: ".",
 	}, patterns...)
 	if err != nil {
+		err = fmt.Errorf("load packages (%v): %w", patterns, err)
 		return
 	}
 
 	for _, pkg := range pkgs {
 		err = p.parsePkg(pkg)
 		if err != nil {
+			err = fmt.Errorf("parse pkg (%s): %w", pkg.PkgPath, err)
 			return
 		}
 	}
