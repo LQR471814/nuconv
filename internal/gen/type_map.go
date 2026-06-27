@@ -16,6 +16,9 @@ func (maptype MapType) TypeID() TypeID {
 
 // GoType returns the Go definition of this type
 func (maptype MapType) GoType(prev *jen.Statement) *jen.Statement {
+	if prev == nil {
+		prev = newStatement()
+	}
 	return maptype.Value.Qual(prev.Map(jen.String()))
 }
 

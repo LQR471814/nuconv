@@ -16,6 +16,9 @@ func (arraytype ArrayType) TypeID() TypeID {
 
 // GoType returns the Go definition of this type
 func (arraytype ArrayType) GoType(prev *jen.Statement) *jen.Statement {
+	if prev == nil {
+		prev = newStatement()
+	}
 	return arraytype.ElementType.Qual(prev.Index(jen.Lit(arraytype.Length)))
 }
 

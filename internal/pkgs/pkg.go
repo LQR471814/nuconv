@@ -94,16 +94,18 @@ func (p pkgParser) Parse() (out gen.Package, err error) {
 		if !ok {
 			continue
 		}
+		var entry gen.TypeEntry
 		switch t := typeName.Type().(type) {
 		case *types.Named:
-			p.out.Types[name], err = p.convertNamedType(t, false)
+			entry, err = p.convertNamedType(t, false)
 		case *types.Alias:
-			p.out.Types[name], err = p.convertTypeAlias(t, false)
+			entry, err = p.convertTypeAlias(t, false)
 		}
 		if err != nil {
 			err = fmt.Errorf("convert type top-level (%s): %w", name, err)
 			return
 		}
+		p.out.Types[name] = entry
 	}
 
 	out = *p.out
@@ -163,8 +165,13 @@ func (p pkgParser) convertType(ctx pkgParseContext, typeID gen.TypeID, t types.T
 		err = fmt.Errorf("interface/generic/union not yet implemented")
 		return
 	case *types.Basic:
-		// we return zero value because a basic type will be handled separately
-		// by the generator
+		// NOTE: this is only ever called in the case where a type that is
+		// derived from a primitive is directly generated
+		// type Foo int
+		out = gen.PrimitiveType{
+			ID:         typeID,
+			GoTypeName: t.Name(),
+		}
 		return
 	case *types.Pointer:
 		var elemTypeID gen.TypeID

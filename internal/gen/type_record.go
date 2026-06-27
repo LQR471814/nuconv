@@ -19,6 +19,9 @@ func (recordtype RecordType) TypeID() TypeID {
 
 // GoType returns the Go definition of this type
 func (recordtype RecordType) GoType(prev *jen.Statement) *jen.Statement {
+	if prev == nil {
+		prev = newStatement()
+	}
 	statements := make([]jen.Code, len(recordtype.Fields))
 	for i, field := range recordtype.Fields {
 		statements[i] = field.Type.Qual(jen.Id(field.GoName))

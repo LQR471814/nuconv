@@ -17,6 +17,9 @@ func (listtype ListType) TypeID() TypeID {
 
 // GoType returns the Go definition of this type
 func (listtype ListType) GoType(prev *jen.Statement) *jen.Statement {
+	if prev == nil {
+		prev = newStatement()
+	}
 	return listtype.ElementType.Qual(prev.Index())
 }
 

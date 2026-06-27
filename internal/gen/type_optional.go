@@ -14,6 +14,9 @@ func (optionaltype OptionalType) TypeID() TypeID {
 
 // GoType returns the Go definition of this type
 func (optionaltype OptionalType) GoType(prev *jen.Statement) *jen.Statement {
+	if prev == nil {
+		prev = newStatement()
+	}
 	return optionaltype.Elem.Qual(prev.Op("*"))
 }
 
