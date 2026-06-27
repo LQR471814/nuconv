@@ -86,6 +86,11 @@ func serializerTypeTemplate(
 		Block(statements...)
 }
 
+func RenderHelpers(g GenContext) {
+	wrapErrFn(g)
+	tryCastFn(g)
+}
+
 func wrapErrFn(g GenContext) {
 	g.Out.Func().
 		Id(id_wrap_err_fn).
