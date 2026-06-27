@@ -11,16 +11,16 @@ import (
 )
 
 const (
-	marker_auto_gen   = "@nutype:auto"
-	marker_manual_gen = "@nutype:manual"
+	marker_auto_gen   = "@nuconv:auto"
+	marker_manual_gen = "@nuconv:manual"
 )
 
 type pkgParser struct {
 	// reservedTypes are a list of named types either marked with
-	// @nutype:manual or are built-in. these types should not have
+	// @nuconv:manual or are built-in. these types should not have
 	// serialize/deserialize code automatically generated for them
 	reservedTypes map[gen.TypeID]struct{}
-	// markedTypes are a list of types marked with @nutype:auto. these types
+	// markedTypes are a list of types marked with @nuconv:auto. these types
 	// should have serialize/deserialize code automatically generated for them
 	markedTypes map[string]struct{}
 	pkg         *packages.Package

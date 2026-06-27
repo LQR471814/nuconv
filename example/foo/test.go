@@ -1,6 +1,7 @@
-package example
+package foo
 
 import (
+	"nuconv/example/bar"
 	"time"
 
 	"github.com/ainvaltin/nu-plugin"
@@ -8,10 +9,10 @@ import (
 
 // this is a doc comment
 //
-// @nutype:auto
+// @nuconv:auto
 type Structure struct {
 	Name      string `nu:"nu_name"`
-	Foo       Foo
+	Foo       bar.Foo
 	Float     float64
 	Bool      bool
 	Time      time.Time
@@ -23,12 +24,7 @@ type Structure struct {
 	Ignored chan bool `nu:"-" json:"-"`
 }
 
-type Foo struct {
-	Bar *string
-	Baz []int
-}
-
-// @nutype:manual
+// @nuconv:manual
 type Custom struct {
 }
 
