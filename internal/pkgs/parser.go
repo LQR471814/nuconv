@@ -82,6 +82,10 @@ func (p *Parser) parsePkg(pkg *packages.Package) (err error) {
 }
 
 func (p *Parser) genPkg(pkg ParsedPackage) (err error) {
+	if len(pkg.Gen.Types) == 0 {
+		return
+	}
+
 	g := gen.GenContext{
 		Out: jen.NewFilePath(string(pkg.Gen.Path)),
 	}
