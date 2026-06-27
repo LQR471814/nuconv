@@ -12,6 +12,11 @@ func (optionaltype OptionalType) TypeID() TypeID {
 	return optionaltype.ID
 }
 
+// GoType returns the Go definition of this type
+func (optionaltype OptionalType) GoType(prev *jen.Statement) *jen.Statement {
+	return optionaltype.Elem.Qual(prev.Op("*"))
+}
+
 // Definition returns a statement which declares the type definition
 //
 // NOTE: the reason why it returns an entire statement instead of just the

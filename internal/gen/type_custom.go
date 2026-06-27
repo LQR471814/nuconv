@@ -16,6 +16,11 @@ func (customtype CustomType) TypeID() TypeID {
 	return customtype.ID
 }
 
+// GoType returns the Go definition of this type
+func (customtype CustomType) GoType(prev *jen.Statement) *jen.Statement {
+	panic("not implemented") // TODO: Implement
+}
+
 // Definition returns a statement which declares the type definition
 func (customtype CustomType) Definition(g GenContext) (out *jen.Statement, err error) {
 	panic("not implemented") // TODO: Implement

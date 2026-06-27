@@ -14,6 +14,11 @@ func (arraytype ArrayType) TypeID() TypeID {
 	return arraytype.ID
 }
 
+// GoType returns the Go definition of this type
+func (arraytype ArrayType) GoType(prev *jen.Statement) *jen.Statement {
+	return arraytype.ElementType.Qual(prev.Index(jen.Lit(arraytype.Length)))
+}
+
 // Definition returns a statement which declares the type definition
 func (arraytype ArrayType) Definition(g GenContext) (out *jen.Statement, err error) {
 	out = defTemplate(g, arraytype).

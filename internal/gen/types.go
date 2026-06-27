@@ -118,6 +118,8 @@ func (id TypeID) String() string {
 type Type interface {
 	// ID returns the ID of the type
 	TypeID() TypeID
+	// GoType returns the Go definition of this type
+	GoType(prev *jen.Statement) *jen.Statement
 	// Definition returns a statement which declares the type definition
 	//
 	// NOTE: the reason why it returns an entire statement instead of just the

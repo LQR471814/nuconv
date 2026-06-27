@@ -14,6 +14,11 @@ func (maptype MapType) TypeID() TypeID {
 	return maptype.ID
 }
 
+// GoType returns the Go definition of this type
+func (maptype MapType) GoType(prev *jen.Statement) *jen.Statement {
+	return maptype.Value.Qual(prev.Map(jen.String()))
+}
+
 // Definition returns a statement which declares the type definition
 //
 // NOTE: the reason why it returns an entire statement instead of just the

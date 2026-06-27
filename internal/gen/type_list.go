@@ -15,6 +15,11 @@ func (listtype ListType) TypeID() TypeID {
 	return listtype.ID
 }
 
+// GoType returns the Go definition of this type
+func (listtype ListType) GoType(prev *jen.Statement) *jen.Statement {
+	return listtype.ElementType.Qual(prev.Index())
+}
+
 // Definition returns a statement which declares the type definition
 func (listtype ListType) Definition(g GenContext) (out *jen.Statement, err error) {
 	out = defTemplate(g, listtype).
@@ -31,7 +36,7 @@ func (listtype ListType) Parser(g GenContext) (out *jen.Statement, err error) {
 		g, listtype,
 		cast,
 		errHandle,
-		jen.Id(id_out).Op("=").Make(listtype.ID.Qual(nil)),
+		jen.Id(id_out).Op("=").Make(listtype.ID.Qual(nil), jen.Len(jen.Id(id_typed))),
 		jen.For(jen.List(jen.Id(id_i), jen.Id(id_el)).Op(":=").Range().Id(id_typed)).Block(
 			listtype.ElementType.ParserQual(
 				jen.List(jen.Id(id_out).Index(jen.Id(id_i)), jen.Id(id_err_val)).Op("="),

@@ -89,6 +89,10 @@ func (p *Parser) genPkg(pkg ParsedPackage) (err error) {
 	gen.RenderHelpers(g)
 
 	for _, t := range pkg.Gen.Types {
+		if t.Anonymous {
+			id := t.Type.TypeID()
+			t.Type.GoType(g.Out.Type().Id(id.Name).Op("="))
+		}
 		_, err = t.Type.Definition(g)
 		if err != nil {
 			err = fmt.Errorf("render type definition (%s): %w", t.Type.TypeID().Name, err)

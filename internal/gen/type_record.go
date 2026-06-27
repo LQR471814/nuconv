@@ -17,6 +17,15 @@ func (recordtype RecordType) TypeID() TypeID {
 	return recordtype.ID
 }
 
+// GoType returns the Go definition of this type
+func (recordtype RecordType) GoType(prev *jen.Statement) *jen.Statement {
+	statements := make([]jen.Code, len(recordtype.Fields))
+	for i, field := range recordtype.Fields {
+		statements[i] = field.Type.Qual(jen.Id(field.GoName))
+	}
+	return prev.Struct(statements...)
+}
+
 // Definition returns a statement which declares the type definition
 func (recordtype RecordType) Definition(g GenContext) (out *jen.Statement, err error) {
 	typeFields := jen.Dict{}
